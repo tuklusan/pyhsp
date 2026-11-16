@@ -8,7 +8,7 @@ images and optional SJASMPlus-compatible assembler source. When requested, the
 bundled optimizer reduces the assembler source before the optimized binary is
 assembled.
 
-Based on original work by Supratim Sanyal of SANYALnet Labs.
+This is a sister project of [ZX-UX Unix for 48K Sinclair ZX Spectrum](https://github.com/tuklusan/ZX-UX-The-ZX-Spectrum-48K-Unix-Project). This project is the backbone of the ZX-UX SDK `rpc` Pascal compiler.
 
 This directory is the user package. It contains the runnable compiler,
 the test sources, and results.
@@ -202,3 +202,6 @@ The bundled `src/upeepz80/` optimizer is distributed with its upstream license
 at `UPEEPZ80-LICENSE.txt`. The bundled Z80 assembler implementation is derived
 from SkoolKit and its GPL-3.0 license is included at
 `SKOOLKIT-GPL-3.0.txt`. Those components remain subject to their own licenses.
+
+Based on original work by [Supratim Sanyal of SANYALnet Labs](https://supratim-sanyal.blogspot.com/).
+
