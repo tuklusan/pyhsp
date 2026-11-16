@@ -2,17 +2,17 @@
 
 ## Python-hosted Pascal-to-Z80 compiler
 
-This Python-hosted compiler turns supported HiSoft Pascal 4T v1.7M source code into Z80 programs for the Sinclair ZX Spectrum. The test corpus lets you compare its output byte for byte with saved HiSoft results. It can also save Z80 assembly, run the built-in optimizer, and make Spectrum TAP files.
+This Python-hosted compiler turns supported HiSoft Pascal 4T v1.7M programs into Z80 code for the Sinclair ZX Spectrum. In all 145 included positive tests, its unoptimized output matches saved results from the original compiler byte for byte. It can also save assembly, optimize the generated code, and make Spectrum TAP files.
 
-This is a sister project of [ZX-UX: UNIX Operating System for Sinclair ZX Spectrum 48K](https://github.com/tuklusan/ZX-UX-The-ZX-Spectrum-48K-Unix-Project). The port provides the basis for the ZX-UX SDK's `rpc` Pascal compiler.
+This is a sister project of [ZX-UX: UNIX Operating System for Sinclair ZX Spectrum 48K](https://github.com/tuklusan/ZX-UX-The-ZX-Spectrum-48K-Unix-Project). The port forms the basis of the ZX-UX SDK's `rpc` Pascal compiler.
 
-The package includes the compiler, its source code, tests, and saved results. It does **not** include HiSoft-owned software, the original HiSoft tape or TZX image, tape-derived proprietary files, or a ZX Spectrum ROM. Get any extra files from lawful sources and follow their terms.
+The package includes the compiler source, test programs, and saved results. It does **not** include HiSoft-owned software, the original HiSoft tape or TZX image, tape-derived proprietary files, or a ZX Spectrum ROM. Get any other required files from lawful sources and follow their terms.
 
 ## 1. Install
 
-Copy or clone the complete repository to your computer. Keep `src/` and `test/` together. Python 3.10 or newer is recommended.
+Clone or download the complete repository. Keep `src/` and `test/` together. We recommend Python 3.10 or newer.
 
-The compiler, bundled assembler, and `upeepz80` optimizer live in `src/`. No extra Python packages are needed. Run the commands below from the repository root.
+The compiler, Z80 assembler, and `upeepz80` optimizer are included under `src/`. No extra Python packages are needed. Run the commands below from the repository root. If your system calls Python 3 `python3`, use that instead of `python`.
 
 ## 2. Compile a Pascal program
 
@@ -22,7 +22,7 @@ Compile a Pascal source file to a flat Z80 binary:
 python src/hp4t.py SOURCE.pas -o OUTPUT.bin
 ```
 
-For a test run, build this sample and save its assembly:
+Try an included example and save its assembly:
 
 ```sh
 mkdir out
@@ -35,39 +35,39 @@ The command format is:
 python src/hp4t.py SOURCE -o OUTPUT [--asm ASM] [--optimize] [--tap]
 ```
 
-Use `python src/hp4t.py --help` to see the options.
+Run `python src/hp4t.py --help` for the command options.
 
 ## 3. Choose your output
 
-What `-o` writes depends on the flags:
+The `-o` option sets the output filename. The other flags decide what goes in it:
 
-- **Default:** A flat, unoptimized Z80 binary, such as `OUTPUT.bin`.
-- **`--asm ASM`:** SJASMPlus-compatible assembly for the program bytes. Without `--optimize`, the saved assembly reproduces the flat binary.
-- **`--optimize`:** Runs the bundled `upeepz80` optimizer on generated assembly, then assembles the result. The result may differ from HiSoft's bytes.
-- **`--tap`:** Writes a standard Spectrum TAP image instead of a flat binary. Use a `.tap` filename with `-o`.
+- **Default:** Writes a flat, unoptimized Z80 binary, such as `OUTPUT.bin`.
+- **`--asm ASM`:** Saves SJASMPlus-compatible assembly for the program. Without `--optimize`, assembling that source reproduces the flat binary.
+- **`--optimize`:** Runs the bundled `upeepz80` optimizer on generated assembly, then assembles the result. The output may differ from the original HiSoft bytes.
+- **`--tap`:** Writes a Spectrum TAP image instead of a flat binary. Use a `.tap` filename with `-o`.
 
-To save the optimized binary and the assembly used to build it:
+To save optimized code and the assembly used to build it:
 
 ```sh
 python src/hp4t.py test/src/positive/literal_001/input.pas -o out/literal_001-optimized.bin --asm out/literal_001-optimized.asm --optimize
 ```
 
-To package the program for tape loading:
+To create a TAP file for cassette loading:
 
 ```sh
 python src/hp4t.py test/src/positive/literal_001/input.pas -o out/literal_001.tap --tap
 ```
 
-With `--asm` and `--tap`, the assembly covers the code inside the TAP file, not its header. With `--optimize`, assembly is temporary unless you also pass `--asm`.
+If you combine `--asm` and `--tap`, the assembly describes the compiled program, not the TAP header. With `--optimize`, the compiler saves the assembly only when you also supply `--asm`.
 
-## 4. Check the compatibility corpus
+## 4. Check the included tests
 
 The repository includes **215 Pascal source programs**:
 
-- **145 positive cases** in `test/src/positive/`.
-- **70 negative or exploratory cases** in `test/src/negative/`.
+- **145 positive tests** under `test/src/positive/`.
+- **70 negative or exploratory tests** under `test/src/negative/`.
 
-Each test uses `input.pas`. Its saved results appear in a matching folder:
+Each test is named `input.pas`. Its saved output is in the matching results folder:
 
 ```text
 test/
@@ -79,62 +79,68 @@ test/
     negative/<case>/
 ```
 
-A typical positive result directory contains:
+A typical positive test has these files:
 
 ```text
-expected.bin             Reference output from the original compiler
-expected.bin.sha         SHA-256 of expected.bin
+expected.bin             Output saved from the original compiler
+expected.bin.sha         SHA-256 hash of expected.bin
 port.bin                 Output from the Python port
-port.bin.sha             SHA-256 of port.bin
+port.bin.sha             SHA-256 hash of port.bin
 port.asm                 Assembly for port.bin
-port-optimized.bin       Binary assembled from optimized source
+port-optimized.bin       Binary made from optimized assembly
 port-optimized.asm       Assembly for port-optimized.bin
 ```
 
-For a promoted positive case, `port.bin` must match `expected.bin` **byte for byte**. Compare the two `.sha` hashes first. The optimized binary is a separate result and does **not** have to match HiSoft's bytes.
+All 145 checked-in positive tests have matching `expected.bin` and `port.bin` files, byte for byte. Their saved SHA-256 hashes also match. The optimized binary is a separate result and need not match the original compiler's bytes.
 
-Promoted negative cases contain `expected_err.bin` and `port.err`. Other negative cases may lack a saved HiSoft error. Without one, they cannot prove an exact error match.
+Of the 70 negative tests, 50 have matching saved error results (`expected_err.bin` and `port.err`). The other 20 are exploratory and have no saved original error to compare. A failed program without a reference error cannot show an exact error match.
 
-Build the `literal_001` example from Section 2. Then compare its checksum with the saved reference. On Windows PowerShell:
+Build the `literal_001` example from Section 2. Then compare its output with the saved original. On Windows PowerShell:
 
 ```powershell
 Get-FileHash test\results\positive\literal_001\expected.bin -Algorithm SHA256
 Get-FileHash out\literal_001.bin -Algorithm SHA256
 ```
 
-On Linux or macOS:
+On Linux:
 
 ```sh
 sha256sum test/results/positive/literal_001/expected.bin out/literal_001.bin
 ```
 
-Matching SHA-256 hashes support a byte-for-byte check. The saved hashes for `literal_001` match.
+On macOS:
+
+```sh
+shasum -a 256 test/results/positive/literal_001/expected.bin out/literal_001.bin
+```
+
+The two hashes should agree. The checked-in `literal_001` files do match.
 
 ## 5. Know the compatibility limits
 
-We check the port against saved HiSoft compiler results:
+We compare the Python port with saved HiSoft results for each tested program:
 
 ```text
 R(s) ≡ P(s)
 ```
 
-`R(s)` is the HiSoft result for source `s`; `P(s)` is the Python port's result. Promoted positive cases must match binary bytes. Promoted negative cases must match the saved error result.
+Here, `R(s)` means the saved original result for program `s`; `P(s)` means the port's result. For positive tests, the compiled bytes must match. For negative tests with a saved original error, the error results must match.
 
-We aim to match **HiSoft Pascal 4T v1.7M**, quirks and all, within these tests. We do not claim to fix old bugs, add new Pascal features, or match every source outside the corpus. Any new features would need their own tests.
+We aim to reproduce **HiSoft Pascal 4T v1.7M** within these tests, quirks included. We do not claim to fix old bugs, add Pascal features, or handle every program beyond the included tests. The compiler may be old; the byte comparison has no sense of nostalgia.
 
 ## 6. Troubleshoot
 
 ### `No module named pascal_compiler`
 
-Do not copy `hp4t.py` on its own. Keep it with `src/pascal_compiler/` and `src/upeepz80/`, then run `python src/hp4t.py ...` from the repo root.
+Keep `hp4t.py` beside the `pascal_compiler/` and `upeepz80/` folders under `src/`. Run `python src/hp4t.py ...` from the repository root.
 
 ### Output does not match `expected.bin`
 
-Check that you used the same source. Compare flat `.bin` files, not a `.tap` image. Turn off `--optimize` for a byte-exact test; optimized code may differ even when it runs well.
+Use the same input file and compare flat `.bin` files, not a TAP image. Leave off `--optimize` for a byte-exact test. Optimized output may differ even when the program runs correctly.
 
 ### The command cannot write an output file
 
-Create the output folder first with `mkdir out`. The tool will not make missing parent folders.
+Create the output folder first with `mkdir out`. The compiler does not create missing parent folders.
 
 ## 7. Package contents
 
@@ -142,19 +148,19 @@ Create the output folder first with `mkdir out`. The tool will not make missing 
 src/
   hp4t.py                         Python entry point
   pascal_compiler/                Compiler and bundled Z80 assembler
-  upeepz80/                        Z80 peephole optimizer
+  upeepz80/                       Z80 peephole optimizer
 SKOOLKIT-GPL-3.0.txt              Assembler license notice
 UPEEPZ80-LICENSE.txt              Optimizer license notice
 test/src/                         Pascal test programs
-test/results/                     Saved binaries, checksums, assembly, and errors
-README.md                         This manual
+test/results/                     Saved binaries, hashes, assembly, and errors
+README.md                         This user guide
 LICENSE                           Distribution terms and notices
 ```
 
 ## License and credits
 
-Read [`LICENSE`](LICENSE) before you use, change, or share this package. Non-commercial use is allowed under its terms; commercial use needs separate written permission. This permission does not cover HiSoft software or other material that is not included here.
+Read [`LICENSE`](LICENSE) before using, changing, or sharing the package. Its terms allow non-commercial use; commercial use requires separate written permission. That permission does not cover HiSoft software or other files missing from this package.
 
-The bundled `upeepz80` optimizer retains its upstream terms in [`UPEEPZ80-LICENSE.txt`](UPEEPZ80-LICENSE.txt). The Z80 assembler is derived from SkoolKit; its GPL-3.0 notice is in [`SKOOLKIT-GPL-3.0.txt`](SKOOLKIT-GPL-3.0.txt).
+The bundled `upeepz80` optimizer keeps its upstream terms in [`UPEEPZ80-LICENSE.txt`](UPEEPZ80-LICENSE.txt). The Z80 assembler is derived from SkoolKit; its GPL-3.0 notice is in [`SKOOLKIT-GPL-3.0.txt`](SKOOLKIT-GPL-3.0.txt).
 
 Based on original work by [Supratim Sanyal of SANYALnet Labs](https://supratim-sanyal.blogspot.com/).
