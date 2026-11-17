@@ -156,11 +156,14 @@ test/results/                     Saved binaries, hashes, assembly, and errors
 README.md                         This user guide
 LICENSE                           Distribution terms and notices
 ```
+## 8. AI disclosure
+
+The Python compiler (`hp4t.py` and `pascal_compiler/`), test suite, and documentation in this repository were developed through iterative human-AI collaboration using generative AI coding assistants under human architecture, direction, and review. (The bundled `upeepz80` optimizer and SkoolKit-derived Z80 assembler are upstream third-party components; see their respective license files.)
+
+An LLM can draft a parser or code generator, but SHA-256 hashes do not negotiate: every compatibility claim in this repository is backed by byte-for-byte comparison against saved HiSoft Pascal 4T v1.7M outputs across all 145 positive tests and 50 negative error cases. Neither the compiler nor its generated Z80 code requires AI models or network services at runtime.
 
 ## License and credits
 
 Read [`LICENSE`](LICENSE) before using, changing, or sharing the package. Its terms allow non-commercial use; commercial use requires separate written permission. That permission does not cover HiSoft software or other files missing from this package.
 
 The bundled `upeepz80` optimizer keeps its upstream terms in [`UPEEPZ80-LICENSE.txt`](UPEEPZ80-LICENSE.txt). The Z80 assembler is derived from SkoolKit; its GPL-3.0 notice is in [`SKOOLKIT-GPL-3.0.txt`](SKOOLKIT-GPL-3.0.txt).
-
-Based on original work by [Supratim Sanyal of SANYALnet Labs](https://supratim-sanyal.blogspot.com/).
